@@ -8,11 +8,43 @@
 import SwiftUI
 
 struct NewActivityView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+    
+    @Environment(\.dismiss) var dismiss
 
-#Preview {
-    NewActivityView()
+    @Binding var path: NavigationPath
+    
+    @Bindable var activityVM: ActivityVM
+    
+    @State private var activity = Activity(
+        id: UUID(),
+        name: "",
+        completedCounter: 0)
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                TextField("New Activity", text: $activity.name, prompt: Text("Write activity name"))
+                VStack(alignment: .leading) {
+                    Stepper("Completed \(activity.completedCounter) times", value: $activity.completedCounter)
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        activityVM.activities.append(activity)
+                        dismiss()
+                        path = NavigationPath([activity])
+                    }
+                    .disabled(activity.name == "")
+                }
+            }
+            .navigationTitle("Add New Activity")
+        }
+    }
 }

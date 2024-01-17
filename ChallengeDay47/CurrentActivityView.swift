@@ -9,31 +9,30 @@ import SwiftUI
 
 struct CurrentActivityView: View {
     
-    @State var activities: Activities
-    let activity: Activity
+    @Bindable var activityVM: ActivityVM
+    
+    let activityID: UUID
     var i: Int {
-        if let result = activities.list.firstIndex(where: { activity.id == $0.id } ) {
+        if let result = activityVM.activities.firstIndex(where: { activityID == $0.id } ) {
             return result
         } else {
-            fatalError("wrong activity")
+            fatalError("unable to find activity ID")
         }
     }
     
     var body: some View {
         Form {
-//        VStack(alignment: .leading) {
             Stepper(
-                "Activity counter: \(activities.list[i].completedCounter)",
-                value: $activities.list[i].completedCounter
+                "Activity counter: \(activityVM.activities[i].completedCounter)",
+                value: $activityVM.activities[i].completedCounter
             )
         }
-        .navigationTitle($activities.list[i].name)
+        .navigationTitle($activityVM.activities[i].name)
         .navigationBarTitleDisplayMode(.inline)
-//        .padding()
     }
 }
 
 #Preview {
-    let activities = Activities()
-    return CurrentActivityView(activities: activities, activity: activities.list[0])
+    let activityVM = ActivityVM()
+    return CurrentActivityView(activityVM: activityVM, activityID: activityVM.activities[0].id)
 }
